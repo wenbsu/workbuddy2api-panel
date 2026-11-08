@@ -6,14 +6,15 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/wenbsu/workbuddy2api-panel/internal/upstream"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/linguo2625469/workbuddy2api-panel/internal/pool"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/prompt"
+	"github.com/wenbsu/workbuddy2api-panel/internal/pool"
+	"github.com/wenbsu/workbuddy2api-panel/internal/prompt"
 )
 
 // Config 顶层配置。
@@ -142,6 +143,8 @@ type Config struct {
 	} `json:"cn"`
 
 	Upstream struct {
+		// JetBrains defaults to the plugin chat profile; explicit null selects desktop.
+		JetBrains *upstream.JetBrainsAdapter `json:"jetbrains,omitempty"`
 		// TimeoutSeconds 短 RPC（refresh/checkin/balance/FetchModels）总时长上限，默认 120。
 		TimeoutSeconds int `json:"timeout_seconds"`
 		// HeaderTimeoutSeconds 聊天 SSE 首字节前（响应头）上限；<=0 回落 TimeoutSeconds。
@@ -302,6 +305,11 @@ func Default() *Config {
 	c.Schedule.BalanceRefreshMinutes = 5
 	c.Schedule.TaskSweepEnabled = true
 	c.Schedule.TaskSweepMinutes = 15
+	c.Upstream.JetBrains = &upstream.JetBrainsAdapter{
+		IDEType: "JetBrains", Platform: "JetBrainsIntelliJIdea", ProductName: "CodeBuddy",
+		ProductVersion: "4.12.42888899", DeploymentType: "SaaS",
+		AgentIntent: "craft", AgentType: "main",
+	}
 	c.Upstream.TimeoutSeconds = 120
 	// HeaderTimeoutSeconds/IdleTimeoutSeconds 默认 0（未设置态），回落见 normalize()。
 	c.Upstream.HeaderTimeoutSeconds = 0

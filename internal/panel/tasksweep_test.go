@@ -8,9 +8,9 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/linguo2625469/workbuddy2api-panel/internal/auth"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/pool"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/upstream"
+	"github.com/wenbsu/workbuddy2api-panel/internal/auth"
+	"github.com/wenbsu/workbuddy2api-panel/internal/pool"
+	"github.com/wenbsu/workbuddy2api-panel/internal/upstream"
 )
 
 // sweepTask 构造假上游的一个任务条目。

@@ -17,10 +17,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/linguo2625469/workbuddy2api-panel/internal/auth"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/credithist"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/pool"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/upstream"
+	"github.com/wenbsu/workbuddy2api-panel/internal/auth"
+	"github.com/wenbsu/workbuddy2api-panel/internal/credithist"
+	"github.com/wenbsu/workbuddy2api-panel/internal/pool"
+	"github.com/wenbsu/workbuddy2api-panel/internal/upstream"
 )
 
 // upgBalanceFake 按 accessToken 识别账号，逐号返回可变的个人版余额。

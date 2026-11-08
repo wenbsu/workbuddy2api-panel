@@ -46,6 +46,16 @@
     "chat_base": ""
   },
   "upstream": {
+    "jetbrains": {
+      "agent_intent": "craft",
+      "agent_type": "main",
+      "ide_type": "JetBrains",
+      "platform": "JetBrainsIntelliJIdea",
+      "platform_version": "",
+      "product_name": "CodeBuddy",
+      "product_version": "4.12.42888899",
+      "deployment_type": "SaaS"
+    },
     "timeout_seconds": 120,
     "header_timeout_seconds": 120,
     "idle_timeout_seconds": 300,

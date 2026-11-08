@@ -17,22 +17,22 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/linguo2625469/workbuddy2api-panel/internal/auth"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/credithist"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/livecfg"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/panel"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/pool"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/redisstore"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/reqlog"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/scheduler"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/server"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/session"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/upstream"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/usage"
+	"github.com/wenbsu/workbuddy2api-panel/internal/auth"
+	"github.com/wenbsu/workbuddy2api-panel/internal/credithist"
+	"github.com/wenbsu/workbuddy2api-panel/internal/livecfg"
+	"github.com/wenbsu/workbuddy2api-panel/internal/panel"
+	"github.com/wenbsu/workbuddy2api-panel/internal/pool"
+	"github.com/wenbsu/workbuddy2api-panel/internal/redisstore"
+	"github.com/wenbsu/workbuddy2api-panel/internal/reqlog"
+	"github.com/wenbsu/workbuddy2api-panel/internal/scheduler"
+	"github.com/wenbsu/workbuddy2api-panel/internal/server"
+	"github.com/wenbsu/workbuddy2api-panel/internal/session"
+	"github.com/wenbsu/workbuddy2api-panel/internal/upstream"
+	"github.com/wenbsu/workbuddy2api-panel/internal/usage"
 )
 
 // appVersion 网关版本（fork 版：面板 + 任务体系），透出到 /panel/api/overview。
-const appVersion = "1.13.0-panel"
+const appVersion = "1.14.0-panel"
 
 // usagePathFor 由 state 文件路径推出用量文件路径：同目录、文件名 usage.json。
 // 这样 config 里改 state_file 时用量数据跟着走，不需要额外配置项。
@@ -155,6 +155,7 @@ func main() {
 	// 出站 UA 与归属头（issue #42 + 上游同步）：
 	// UserAgent 非空则完全覆盖；ClientVersion/CliVersion 缺省对齐官方形态；
 	// ClientName 非空时 chat 路径注入 X-IDE-* 四头（用量归因对齐官方桌面端）。
+	up.ChatAdapter = cfg.Upstream.JetBrains
 	up.UserAgent = cfg.Upstream.UserAgent
 	up.ClientVersion = cfg.Upstream.ClientVersion
 	up.CliVersion = cfg.Upstream.CliVersion

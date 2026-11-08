@@ -24,7 +24,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/linguo2625469/workbuddy2api-panel/internal/auth"
+	"github.com/wenbsu/workbuddy2api-panel/internal/auth"
 )
 
 const (

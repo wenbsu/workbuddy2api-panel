@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/linguo2625469/workbuddy2api-panel/internal/auth"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/credithist"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/pool"
+	"github.com/wenbsu/workbuddy2api-panel/internal/auth"
+	"github.com/wenbsu/workbuddy2api-panel/internal/credithist"
+	"github.com/wenbsu/workbuddy2api-panel/internal/pool"
 )
 
 // creditPanel 构造带积分账本与一个具名账号的面板（鉴权走 test-key）。

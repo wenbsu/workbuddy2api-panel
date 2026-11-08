@@ -30,7 +30,7 @@
 >
 > **维护方式披露**：本仓库近期的 issue / PR 处置、代码审查、测试与修复实现**大量由 AI 辅助完成**（自动化编码 agent），合并与发布决策由维护者作出。请知悉后再使用或参与贡献。
 
-> **本项目是 [Sliverkiss/workbuddy2api](https://github.com/Sliverkiss/workbuddy2api) 的增强分支**（fork）。
+> **本项目是 Sliverkiss/workbuddy2api 的增强分支**（fork）。
 > 上游仓库现已删除；本项目**已同步至上游删库前的最后一次更新**（`ea8b1e5`），此后由本分支独立维护演进。
 > 在上游基础上重构了可视化运维层；差异概览见 [与上游的差异](#-与上游的差异)，上游设计的精巧之处（账号池调度、错误分类、提示词体系）原样保留，详见下文。
 
@@ -38,7 +38,7 @@
 
 ## 使用声明（必读）
 
-本项目（含上游 [Sliverkiss/workbuddy2api](https://github.com/Sliverkiss/workbuddy2api)，下同）的开发初衷只有一个：**方便个人管理自己的 CodeBuddy 账号**——自动签到、保活、给自己的本地工具提供一个 OpenAI 兼容入口。它是免费、开源、按「原样」提供的个人自用工具。
+本项目（含上游 Sliverkiss/workbuddy2api，下同）的开发初衷只有一个：**方便个人管理自己的 CodeBuddy 账号**——自动签到、保活、给自己的本地工具提供一个 OpenAI 兼容入口。它是免费、开源、按「原样」提供的个人自用工具。
 
 近期我们发现有人将本项目用于以下行为：
 
@@ -163,7 +163,7 @@ WorkBuddy2API 是一个自托管的 **OpenAI 兼容反向代理网关**，将腾
 
 ## 🆚 与上游的差异
 
-本分支相对 [上游 master](https://github.com/Sliverkiss/workbuddy2api) 的增量（均已在真实多账号环境验证）：
+本分支相对 上游 master 的增量（均已在真实多账号环境验证）：
 
 ### 新增
 
@@ -247,7 +247,7 @@ mkdir -p auths data && cp config.example.json config.json
 docker run -d --name workbuddy2api \
   -p 7863:7863 -e TZ=Asia/Shanghai \
   -v ./auths:/app/auths -v ./data:/app/data -v ./config.json:/app/config.json \
-  ghcr.io/linguo2625469/workbuddy2api-panel:latest
+  ghcr.io/wenbsu/workbuddy2api-panel:latest
 
 # 3. 健康检查（无可用账号时返回 503）
 curl -s http://localhost:7863/healthz
@@ -263,7 +263,7 @@ curl -s http://localhost:7863/healthz
 
 ```bash
 # 1. 克隆
-git clone https://github.com/linguo2625469/workbuddy2api-panel.git
+git clone https://github.com/wenbsu/workbuddy2api-panel.git
 cd workbuddy2api-panel
 
 # 2. 准备配置（compose 挂载此文件，缺失会导致容器启动失败）
@@ -1044,7 +1044,7 @@ sudo chown -R 10001:10001 ./auths ./data ./config.json
 本项目采用 [MIT License](LICENSE) 开源协议。
 
 - 允许任意使用、复制、修改、合并、发布、分发、再授权及销售
-- 再分发（源码或二进制形式）时，请保留原仓库的 MIT 版权声明与许可声明（如在 NOTICE 或 README 中注明原始出处 `https://github.com/Sliverkiss/workbuddy2api`）
+- 再分发（源码或二进制形式）时，请保留原仓库的 MIT 版权声明与许可声明（原作者声明见 LICENSE）
 - 本项目不授予任何上游（CodeBuddy / 腾讯）接口或服务的权利；使用者仍需自行遵守上游服务条款
 
 ### 按地区配置账号池调度
@@ -1074,3 +1074,41 @@ sudo chown -R 10001:10001 ./auths ./data ./config.json
 Web 面板「账号池与流量治理」可分别配置策略和账号顺序，保存后热生效。闲置补偿与快过期积分加权仅影响加权随机。无地区上下文的旧 Pool 入口保留原行为；策略不会改变路由或自动跨地区借号。
 
 本功能不假定国际版免费模型已采用五小时限额；限流及恢复时间继续依据现有上游识别逻辑处理，不硬编码五小时。
+
+### 默认 JetBrains 聊天适配层
+
+默认启用独立的 JetBrains 聊天请求头构造，旧配置缺少 `upstream.jetbrains` 时同样启用。显式设置 `"jetbrains": null` 可恢复原桌面实现。修改后重启服务。默认平台为 JetBrainsIntelliJIdea，未配置的 IDE 版本在 UA 中显示 unknown；可按实际安装补充版本。以下为结构示例，IDE / 产品字段必须按实际安装配置填写，示例不代表插件运行时已验证的配置：
+
+```json
+{
+  "upstream": {
+    "jetbrains": {
+      "agent_intent": "craft",
+      "agent_type": "main",
+      "ide_type": "JetBrains",
+      "platform": "JetBrainsIntelliJIdea",
+      "platform_version": "2026.2",
+      "product_name": "CodeBuddy",
+      "product_version": "4.12.42888899",
+      "deployment_type": "SaaS"
+    }
+  }
+}
+```
+
+依据本地插件 4.12.42888899 的 `UserAgentHttpInterceptor.buildUserAgent`
+及 `CodewikiServiceImpl.buildAuthHeaders` 实现产品版本与 IDE 版本分离。
+仅调整聊天请求头和 gzip 传输：复用现有聊天端点、请求体预处理、OAuth 刷新和 SSE 解析，
+不代表完整移植插件；真实抓包已验证 Craft + Auto 主聊天样本，但尚未验证本网关的服务端准入。
+不继承桌面端 Origin、模拟设备 ID、客户端 IP 和 WorkBuddy 归属字段。
+设备令牌仅复用已有配置；企业账号不注入设备令牌。
+尚未进行真实账号联网验证，不保证避免账号限制。
+
+JetBrains 聊天传输已依据本机 Charles 抓包对齐 `Accept: */*`、
+`Content-Type: application/json;charset=UTF-8` 及 gzip 请求体。
+`X-Model-ID` 从处理后的请求体模型提取；`agent_intent` / `agent_type`
+默认 `craft` / `main`，可配置为空以省略，其他模式应填写实际语义。
+不固定样本中的模型、工具、推理参数或 previous_response_id；调用方继续维护上下文。
+IDE 版本应按实际安装配置（本次抓包为 `IU-243.26053.27`），不是通用默认值。
+证据见 `audit/charles-chat-evidence.json`。此验证覆盖 Craft + Auto 样本，
+不代表已完成企业账号、其他模型或完整插件链路验证。

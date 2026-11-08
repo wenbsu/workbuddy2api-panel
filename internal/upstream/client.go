@@ -4,6 +4,7 @@ package upstream
 
 import (
 	"bytes"
+	"compress/gzip"
 	"context"
 	"encoding/json"
 	"errors"
@@ -21,8 +22,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/linguo2625469/workbuddy2api-panel/internal/auth"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/logfmt"
+	"github.com/wenbsu/workbuddy2api-panel/internal/auth"
+	"github.com/wenbsu/workbuddy2api-panel/internal/logfmt"
 )
 
 // ErrKind 错误分类，pool 据此决定冷却时长。
@@ -702,6 +703,9 @@ type apiEnvelope struct {
 
 // Client 上游 HTTP 客户端。Base 字段可覆盖便于测试。
 type Client struct {
+	// ChatAdapter selects the optional plugin chat transport profile. Nil keeps desktop behavior.
+	ChatAdapter *JetBrainsAdapter
+
 	HTTP *http.Client
 
 	// ChatHTTP 聊天 SSE 专用 client：无总时长上限（Timeout=0），首字节由
@@ -1216,16 +1220,32 @@ func (c *Client) ChatStreamContext(ctx context.Context, a *auth.Auth, body []byt
 	if c.globalOn(a) {
 		prepared = ensureConsoleSystem(prepared)
 	}
+	wireBody := prepared
+	if c.ChatAdapter != nil {
+		var compressed bytes.Buffer
+		zw := gzip.NewWriter(&compressed)
+		if _, err := zw.Write(prepared); err != nil {
+			return nil, 0, nil, err
+		}
+		if err := zw.Close(); err != nil {
+			return nil, 0, nil, err
+		}
+		wireBody = compressed.Bytes()
+	}
 	// reqCtx 的 cancel 在每个出口显式调用（Do 失败 / ≥400 / 成功分支移交 monitorBody），
 	// 循环本身各分支必 return——无循环尾兜底代码（此前外层 var cancel 从未赋值 +
 	// 尾部不可达 cancel() 是潜伏 nil-panic，已删；chatPaths 恒非空由构造保证）。
 	for _, path := range c.chatPaths(a) {
 		endpoint := c.chatBase(a) + path
-		req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewReader(prepared))
+		req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewReader(wireBody))
 		if err != nil {
 			return nil, 0, nil, err
 		}
 		c.ChatHeaders(req, a, clientIP, meta)
+		if c.ChatAdapter != nil {
+			req.Header.Set("Content-Encoding", "gzip")
+			c.ChatAdapter.modelHeaders(req, prepared)
+		}
 		// 从调用方 ctx 派生：保留取消传播（父 ctx 取消 → 本 ctx 取消），
 		// 同时 monitorBody.Close 仍能独立 cancel 本分支（空闲掐流）。
 		reqCtx, cancel := context.WithCancel(ctx)

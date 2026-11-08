@@ -16,9 +16,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/linguo2625469/workbuddy2api-panel/internal/logfmt"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/session"
-	"github.com/linguo2625469/workbuddy2api-panel/internal/upstream"
+	"github.com/wenbsu/workbuddy2api-panel/internal/logfmt"
+	"github.com/wenbsu/workbuddy2api-panel/internal/session"
+	"github.com/wenbsu/workbuddy2api-panel/internal/upstream"
 )
 
 // searchToolLabel 搜索流量在请求日志「模型」列里的标识。
