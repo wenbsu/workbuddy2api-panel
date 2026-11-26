@@ -204,6 +204,7 @@ func (p *Panel) startGrowthQueue(concurrency int, growth bool) (started bool, to
 	states := p.cfg.Pool.List()
 
 	var accts []queueAccount
+	var blockedAccounts []string
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	for _, st := range states {
@@ -231,6 +232,9 @@ func (p *Panel) startGrowthQueue(concurrency int, growth bool) (started bool, to
 				return
 			}
 			if a.IsEnterpriseSession() {
+				mu.Lock()
+				blockedAccounts = append(blockedAccounts, a.Nickname+"（"+a.UID+"）")
+				mu.Unlock()
 				log.Printf("panel: WARN 队列跳过 uid=%s nickname=%q：凭证为企业切换会话（token_source=enterprise_switch），成长任务行为事件会被上游静默丢弃；请移除该账号，在浏览器退出企业切换（个人身份）后重新登录", a.UID, a.Nickname)
 				return
 			}
@@ -277,11 +281,15 @@ func (p *Panel) startGrowthQueue(concurrency int, growth bool) (started bool, to
 		}
 	}
 	if len(items) == 0 {
-		log.Printf("panel: 队列启动：无可执行待办（全部账号任务已完成）")
+		log.Printf("panel: 队列启动：无可执行待办（企业切换会话跳过 %d 个账号）", len(blockedAccounts))
 		q.mu.Lock()
 		q.running = false
 		q.startedAt = time.Time{}
 		q.mu.Unlock()
+		if len(blockedAccounts) > 0 {
+			sort.Strings(blockedAccounts)
+			return false, 0, -1, fmt.Sprintf("无法执行成长任务：%v 的凭证为企业切换会话（token_source=enterprise_switch）。请在浏览器切回个人身份后重新登录并更新该账号凭证。", blockedAccounts)
+		}
 		return false, 0, 0, "全部账号没有待办任务"
 	}
 
