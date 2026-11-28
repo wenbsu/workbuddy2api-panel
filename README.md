@@ -1089,14 +1089,14 @@ Web 面板「账号池与流量治理」可分别配置策略和账号顺序，�
       "platform": "JetBrainsIntelliJIdea",
       "platform_version": "2026.2",
       "product_name": "CodeBuddy",
-      "product_version": "4.12.42888899",
+      "product_version": "4.12.43685444",
       "deployment_type": "SaaS"
     }
   }
 }
 ```
 
-依据本地插件 4.12.42888899 的 `UserAgentHttpInterceptor.buildUserAgent`
+依据本地插件 4.12.43685444 的 `UserAgentHttpInterceptor.buildUserAgent`
 及 `CodewikiServiceImpl.buildAuthHeaders` 实现产品版本与 IDE 版本分离。
 仅调整聊天请求头和 gzip 传输：复用现有聊天端点、请求体预处理、OAuth 刷新和 SSE 解析，
 不代表完整移植插件；真实抓包已验证 Craft + Auto 主聊天样本，但尚未验证本网关的服务端准入。
@@ -1112,3 +1112,8 @@ JetBrains 聊天传输已依据本机 Charles 抓包对齐 `Accept: */*`、
 IDE 版本应按实际安装配置（本次抓包为 `IU-243.26053.27`），不是通用默认值。
 证据见 `audit/charles-chat-evidence.json`。此验证覆盖 Craft + Auto 样本，
 不代表已完成企业账号、其他模型或完整插件链路验证。
+
+2026-11-27 本地复核：插件更新至 `4.12.43685444`，默认产品版本与配置示例同步。
+本次 Charles 会话包含 9 次成功的聊天请求，沿用 `/v2/chat/completions`、gzip 与现有 SSE 格式；
+主聊天继续使用 Craft + Auto，另含标题生成请求。未发现需要新增的必填聊天参数，
+因此保留现有请求体处理与响应解析。此结果不替代网关真实账号联网验证。

@@ -8,7 +8,7 @@ func TestJetBrainsDefaultConfig(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if c.Upstream.JetBrains == nil || c.Upstream.JetBrains.ProductVersion != "4.12.42888899" || c.Upstream.JetBrains.Platform != "JetBrainsIntelliJIdea" {
+		if c.Upstream.JetBrains == nil || c.Upstream.JetBrains.ProductVersion != "4.12.43685444" || c.Upstream.JetBrains.Platform != "JetBrainsIntelliJIdea" {
 			t.Fatal("plugin profile missing from default config")
 		}
 	}

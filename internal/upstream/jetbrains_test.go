@@ -12,11 +12,11 @@ import (
 )
 
 func TestJetBrainsProfileIsolation(t *testing.T) {
-	c := &Client{ChatAdapter: &JetBrainsAdapter{IDEType: "JetBrains", Platform: "JetBrainsIntelliJIdea", PlatformVersion: "2026.2", ProductName: "CodeBuddy", ProductVersion: "4.12.42888899", DeploymentType: "SaaS"}}
+	c := &Client{ChatAdapter: &JetBrainsAdapter{IDEType: "JetBrains", Platform: "JetBrainsIntelliJIdea", PlatformVersion: "2026.2", ProductName: "CodeBuddy", ProductVersion: "4.12.43685444", DeploymentType: "SaaS"}}
 	a := &auth.Auth{UID: "test-user", EnterpriseID: "test-enterprise"}
 	req := httptest.NewRequest("POST", "https://example.test/v2/chat/completions", nil)
 	c.ChatHeaders(req, a, "192.0.2.1", ChatMeta{ConversationID: "conversation"})
-	for k, want := range map[string]string{"X-IDE-Type": "JetBrains", "X-IDE-Name": "JetBrainsIntelliJIdea", "X-IDE-Version": "2026.2", "X-Product-Version": "4.12.42888899", "X-Tenant-Id": "test-enterprise", "Accept": "*/*", "User-Agent": "JetBrainsIntelliJIdea/2026.2 CodeBuddy/4.12.42888899", "X-Conversation-ID": "conversation"} {
+	for k, want := range map[string]string{"X-IDE-Type": "JetBrains", "X-IDE-Name": "JetBrainsIntelliJIdea", "X-IDE-Version": "2026.2", "X-Product-Version": "4.12.43685444", "X-Tenant-Id": "test-enterprise", "Accept": "*/*", "User-Agent": "JetBrainsIntelliJIdea/2026.2 CodeBuddy/4.12.43685444", "X-Conversation-ID": "conversation"} {
 		if got := req.Header.Get(k); got != want {
 			t.Errorf("%s=%q, want %q", k, got, want)
 		}

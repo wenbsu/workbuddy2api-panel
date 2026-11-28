@@ -307,7 +307,7 @@ func Default() *Config {
 	c.Schedule.TaskSweepMinutes = 15
 	c.Upstream.JetBrains = &upstream.JetBrainsAdapter{
 		IDEType: "JetBrains", Platform: "JetBrainsIntelliJIdea", ProductName: "CodeBuddy",
-		ProductVersion: "4.12.42888899", DeploymentType: "SaaS",
+		ProductVersion: "4.12.43685444", DeploymentType: "SaaS",
 		AgentIntent: "craft", AgentType: "main",
 	}
 	c.Upstream.TimeoutSeconds = 120

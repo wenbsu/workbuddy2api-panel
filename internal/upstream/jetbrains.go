@@ -10,7 +10,7 @@ import (
 
 // JetBrainsAdapter is the default server chat profile. Values describe the actual host
 // installation; no device identity or device proof is synthesized here.
-// Evidence: plugin 4.12.42888899, UserAgentHttpInterceptor.buildUserAgent
+// Evidence: plugin 4.12.43685444, UserAgentHttpInterceptor.buildUserAgent
 // (server.js.map) and CodewikiServiceImpl.buildAuthHeaders (out/extension/index.js).
 // Other endpoints retain their existing implementation.
 type JetBrainsAdapter struct {
